@@ -1,0 +1,18 @@
+services:
+  atrous_attn_vit:
+    build:
+      context: .
+      dockerfile: docker/atrous_attn_vit.dockerfile
+    image: git.waterloo.ca:5050/watonomous/registery/auto-lane-gen-experiments/atrous_attn_vit
+
+    # ipc: host
+    # tty: true
+
+    volumes:
+      - ./:/auto-lane-gen-experiments
+
+    # deploy:
+    #   resources:
+    #     reservations:
+    #       devices:
+    #         - capabilities: [gpu]
