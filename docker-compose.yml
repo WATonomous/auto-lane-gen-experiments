@@ -10,7 +10,14 @@ services:
 
     volumes:
       - ./:/auto-lane-gen-experiments
-
+  
+  vit_cifar10:
+    build:
+      context: .
+      dockerfile: docker/vit_cifar10.dockerfile
+    image: git.waterloo.ca:5050/watonomous/registery/auto-lane-gen-experiments/vit_cifar10
+    volumes:
+      - ./src/vit_cifar10:/root/vit_cifar10
     # deploy:
     #   resources:
     #     reservations:
