@@ -47,6 +47,18 @@ parser.add_argument(
     type=int,
     help="Seed to use",
 )
+parser.add_argument(
+    "--epochs",
+    default=30,
+    type=int,
+    help="Number of Epochs",
+)
+parser.add_argument(
+    "--patchsize",
+    default=32,
+    type=int,
+    help="size of patch",
+)
 args = parser.parse_args()
 
 def seed_everything(seed):
@@ -58,9 +70,9 @@ def seed_everything(seed):
 
 # Change seed between runs
 seed_everything(args.seed)
-lr = 3e-5
+lr = 0.001
 gamma = 0.7
-epochs = 30
+epochs = args.epochs
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 print(device)
@@ -120,11 +132,16 @@ class Attention(nn.Module):
 
     def forward(self, x):
         qkv = self.to_qkv(x).chunk(3, dim = -1)
+        _kv = map(lambda t: torch.clone(t), qkv)
         qkv = map(lambda t: rearrange(t, 'b n (h d) -> b h n d', h = self.heads), qkv)
         if self.featurePool or args.atrousAttn:
-            qkv = map(lambda t: rearrange(t, 'b h n d -> b h (d n)', d=self.dim_head), qkv)
-            qkv = map(lambda t: rearrange(t, 'b h (n d) -> b h n d', d=self.dim_head), qkv)
-        q, k, v = qkv
+            _kv = map(lambda t: rearrange(t, 'b n (h d) -> b h n d', h = self.heads), _kv)
+            _kv = map(lambda t: rearrange(t, 'b h n d -> b h (d n)', d=self.dim_head), _kv)
+            _kv = map(lambda t: rearrange(t, 'b h (n d) -> b h n d', d=self.dim_head), _kv)
+            _, k, v = qkv
+            q, _, _ = _kv
+        else:
+            q, k, v = qkv
         #q, k, v = map(lambda t: rearrange(t, 'b n (h d) -> b h n d', h = self.heads), qkv)
 
         dots = torch.matmul(q, k.transpose(-1, -2)) * self.scale
@@ -231,7 +248,6 @@ def train(model, dataloader, criterion, optimizer, scheduler, model_ema=None):
         correct += torch.sum(labels == prd)
         
     avg_loss = running_loss/total_steps
-    scheduler.step()
     
     return avg_loss, correct
 
@@ -265,17 +281,16 @@ def evaluate(model, dataloader):
 
 
 # %%
-
 train_sampler, trainloader, validloader, testloader = get_dataloaders("imagenet", 64, "/media/bhux/8C0EC9000EC8E3F4/imagenet")
 
 # Training loop
 # model = WideResNet(28, 10, 0.3, 10)
 model = ViT(
     image_size = 224,
-    patch_size = 32,
+    patch_size = args.patchsize,
     num_classes = 1000,
-    dim = 768,
-    depth = 8,
+    dim = 1024,
+    depth = 6,
     heads = 16,
     mlp_dim = 2048,
     dropout = 0.1
@@ -286,12 +301,21 @@ losses = []
 # loss function
 criterion = nn.CrossEntropyLoss()
 # optimizer
-optimizer = optim.Adam(model.parameters(), lr=lr)
+optimizer = optim.AdamW(model.parameters(), lr=lr, weight_decay=0.05)
 # scheduler
-scheduler = StepLR(optimizer, step_size=27, gamma=gamma)
+scheduler = StepLR(optimizer, step_size=80, gamma=gamma)
+# optimizer = torch.optim.SGD(
+#         model.parameters(),
+#         lr,
+#         0.9,
+#         weight_decay=3e-4,
+#         nesterov=True
+#     )
+#scheduler = optim.lr_scheduler.CosineAnnealingLR(optimizer, float(epochs))
 
 for e in range(epochs):
     print(f"\nepoch {e+1}/{epochs}")
+    print(scheduler.get_last_lr())
     loss, corr = train(model, trainloader, criterion, optimizer, scheduler)
     print(f" loss = {loss}")
     print(" Accuracy: {}/{} ({:.0f}%)\n".format(corr, len(trainloader.dataset),
@@ -299,6 +323,7 @@ for e in range(epochs):
     losses.append(loss)
     # Evaluate model on both validation sets
     acc, f1, cf_m = evaluate(model, validloader)
+    scheduler.step()
 
 
 

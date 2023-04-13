@@ -24,9 +24,6 @@ RUN pip install -U matplotlib
 RUN pip install seaborn
 RUN pip install einops
 
-
-WORKDIR /root
-COPY src/atrous_attn_vit /root/atrous_attn_vit
 WORKDIR /root/atrous_attn_vit
 
 ENV PATH=/usr/local/cuda-11.3/bin:$PATH

@@ -4,13 +4,9 @@ services:
       context: .
       dockerfile: docker/atrous_attn_vit.dockerfile
     image: git.waterloo.ca:5050/watonomous/registery/auto-lane-gen-experiments/atrous_attn_vit
-
-    # ipc: host
-    # tty: true
-
     volumes:
-      - ./:/auto-lane-gen-experiments
-  
+      - ./src/atrous_attn_vit:/root/atrous_attn_vit
+
   vit_cifar10:
     build:
       context: .
@@ -18,8 +14,20 @@ services:
     image: git.waterloo.ca:5050/watonomous/registery/auto-lane-gen-experiments/vit_cifar10
     volumes:
       - ./src/vit_cifar10:/root/vit_cifar10
-    # deploy:
-    #   resources:
-    #     reservations:
-    #       devices:
-    #         - capabilities: [gpu]
+
+  lane_transformer:
+    build:
+      context: .
+      dockerfile: docker/lane_transformer.dockerfile
+    image: git.waterloo.ca:5050/watonomous/registery/auto-lane-gen-experiments/lane_transformer
+    volumes:
+      - ./src/lane_transformer:/root/lane_transformer
+      # need to add the argoverse dataset in here
+
+    center_line_det:
+      build:
+        context: .
+        dockerfile: docker/center_line_det.dockerfile
+      image: git.waterloo.ca:5050/watonomous/registery/auto-lane-gen-experiments/center_line_det
+      volumes:
+        - ./src/center_line_det:/root/center_line_det
