@@ -5,7 +5,9 @@ services:
       dockerfile: docker/atrous_attn_vit.dockerfile
     image: git.waterloo.ca:5050/watonomous/registery/auto-lane-gen-experiments/atrous_attn_vit
     volumes:
+      - /mnt/wato-drive2/wato-datasets/imagenet:/imagenet
       - ./src/atrous_attn_vit:/root/atrous_attn_vit
+    ipc: host
 
   vit_cifar10:
     build:
@@ -24,10 +26,10 @@ services:
       - ./src/lane_transformer:/root/lane_transformer
       # need to add the argoverse dataset in here
 
-    center_line_det:
-      build:
-        context: .
-        dockerfile: docker/center_line_det.dockerfile
-      image: git.waterloo.ca:5050/watonomous/registery/auto-lane-gen-experiments/center_line_det
-      volumes:
-        - ./src/center_line_det:/root/center_line_det
+    # center_line_det:
+    #   build:
+    #     context: .
+    #     dockerfile: docker/center_line_det.dockerfile
+    #   image: git.waterloo.ca:5050/watonomous/registery/auto-lane-gen-experiments/center_line_det
+    #   volumes:
+    #     - ./src/center_line_det:/root/center_line_det

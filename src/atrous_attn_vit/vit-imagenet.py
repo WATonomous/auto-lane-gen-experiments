@@ -169,7 +169,7 @@ class Transformer(nn.Module):
         return x
 
 class ViT(nn.Module):
-    def __init__(self, *, image_size, patch_size, num_classes, dim, depth, heads, mlp_dim, 
+    def __init__(self, *, image_size, patch_size, num_classes, dim, depth, heads, mlp_dim,
                  pool = 'cls', channels = 3, dim_head = 64, dropout = 0., emb_dropout = 0.,
                  featurePool=False):
         super().__init__()
@@ -226,7 +226,7 @@ def train(model, dataloader, criterion, optimizer, scheduler, model_ema=None):
     for i, (d, l) in enumerate(tqdm(dataloader)):
         images = d.to(device)
         labels = l.to(device)
-        
+
         optimizer.zero_grad()
 
         output = model(images)
@@ -236,19 +236,19 @@ def train(model, dataloader, criterion, optimizer, scheduler, model_ema=None):
         # Grad clip
         # nn.utils.clip_grad_norm_(model.parameters(), 5)
         optimizer.step()
-        
+
         # Only if EMA is used - in this case it is not
         if model_ema is not None:
             model_ema.update(model)
-        
+
         running_loss += loss.item()
         total_steps += 1
-        
+
         prd = output.argmax(1)
         correct += torch.sum(labels == prd)
-        
+
     avg_loss = running_loss/total_steps
-    
+
     return avg_loss, correct
 
 def evaluate(model, dataloader):
@@ -274,14 +274,14 @@ def evaluate(model, dataloader):
 
     print('Test set: Avg. loss: {:.4f}, Accuracy: {}/{} ({:.0f}%),f1: {:.0f}%'.format(
      test_loss, correct, len(dataloader.dataset),
-     100. * correct / len(dataloader.dataset), 
+     100. * correct / len(dataloader.dataset),
      100. * f1))
-    
+
     return correct / len(dataloader.dataset), f1, cf_matrix
 
 
 # %%
-train_sampler, trainloader, validloader, testloader = get_dataloaders("imagenet", 64, "/media/bhux/8C0EC9000EC8E3F4/imagenet")
+train_sampler, trainloader, validloader, testloader = get_dataloaders("imagenet", 64, "/mnt/wato-drive2/wato-datasets/imagenet")
 
 # Training loop
 # model = WideResNet(28, 10, 0.3, 10)

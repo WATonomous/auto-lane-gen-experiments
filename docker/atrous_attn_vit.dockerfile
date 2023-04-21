@@ -24,6 +24,8 @@ RUN pip install -U matplotlib
 RUN pip install seaborn
 RUN pip install einops
 
+# WORKDIR /root
+# COPY src/atrous_attn_vit /root/atrous_attn_vit
 WORKDIR /root/atrous_attn_vit
 
 ENV PATH=/usr/local/cuda-11.3/bin:$PATH
@@ -31,5 +33,7 @@ ENV LD_LIBRARY_PATH=/usr/local/cuda-11.3/lib64:$LD_LIBRARY_PATH
 ENV CUDA_HOME=/usr/local/cuda-11.3
 ENV FORCE_CUDA=1
 
-RUN /bin/bash ./test_script.sh
+
+# RUN /bin/bash/ root/atrous_attn_vit/test_script.sh
+CMD ["/bin/bash", "./test_script.sh"]
 
