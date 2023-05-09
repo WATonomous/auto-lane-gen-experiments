@@ -1,0 +1,12 @@
+cuda
+You set download=True, but a folder 'train' already exist in the root directory. If you want to re-download or re-extract the archive, delete the folder.
+You set download=True, but a folder 'val' already exist in the root directory. If you want to re-download or re-extract the archive, delete the folder.
+Let's use 2 GPUs!
+/opt/conda/lib/python3.8/site-packages/torchvision/transforms/transforms.py:852: UserWarning: Argument interpolation should be of type InterpolationMode instead of int. Please, use InterpolationMode enum.
+  warnings.warn(
+/opt/conda/lib/python3.8/site-packages/torchvision/transforms/transforms.py:287: UserWarning: Argument interpolation should be of type InterpolationMode instead of int. Please, use InterpolationMode enum.
+  warnings.warn(
+Traceback (most recent call last):
+  File "vit-imagenet.py", line 321, in <module>
+    input = data.to(device)
+AttributeError: 'list' object has no attribute 'to'

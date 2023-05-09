@@ -8,6 +8,13 @@ services:
       - /mnt/wato-drive2/wato-datasets/imagenet:/imagenet
       - ./src/atrous_attn_vit:/root/atrous_attn_vit
     ipc: host
+    deploy:
+      resources:
+        reservations:
+          devices:
+          - driver: nvidia
+            device_ids: ['0', '1']
+            capabilities: [gpu]
 
   vit_cifar10:
     build:
