@@ -295,10 +295,12 @@ model = ViT(
     mlp_dim = 2048,
     dropout = 0.1
 )
-if torch.cuda.device_count() > 1:
-    print("Let's use", torch.cuda.device_count(), "GPUs!")
-    # dim = 0 [30, xxx] -> [10, ...], [10, ...], [10, ...] on 3 GPUs
-    model = nn.DataParallel(model)
+
+# if torch.cuda.device_count() > 1:
+#     print("Let's use", torch.cuda.device_count(), "GPUs!")
+#     # dim = 0 [30, xxx] -> [10, ...], [10, ...], [10, ...] on 3 GPUs
+#     model = nn.DataParallel(model)
+
 model.to(device)
 losses = []
 # Random parameters chosen - similar to LaNet parameters but with nesterov
@@ -317,11 +319,11 @@ scheduler = StepLR(optimizer, step_size=80, gamma=gamma)
 #     )
 #scheduler = optim.lr_scheduler.CosineAnnealingLR(optimizer, float(epochs))
 
-for data in trainloader:
-    input = data.to(device)
-    output = model(input)
-    print("Outside: input size", input.size(),
-          "output_size", output.size())
+# for data in trainloader:
+#     input = data.to(device)
+#     output = model(input)
+#     print("Outside: input size", input.size(),
+#           "output_size", output.size())
 
 
 for e in range(epochs):
