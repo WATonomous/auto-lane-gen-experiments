@@ -5,7 +5,7 @@ services:
       dockerfile: docker/atrous_attn_vit.dockerfile
     image: git.waterloo.ca:5050/watonomous/registery/auto-lane-gen-experiments/atrous_attn_vit
     volumes:
-      - /mnt/wato-drive2/wato-datasets/imagenet:/imagenet
+      - /mnt/wato-drive2/wato-datasets/imagenet-temp:/mnt/wato-drive2/wato-datasets/imagenet-temp
       - ./src/atrous_attn_vit:/root/atrous_attn_vit
     ipc: host
     deploy:

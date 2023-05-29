@@ -151,6 +151,7 @@ class Attention(nn.Module):
 
         out = torch.matmul(attn, v)
         out = rearrange(out, 'b h n d -> b n (h d)')
+
         return self.to_out(out)
 
 class Transformer(nn.Module):
@@ -281,7 +282,7 @@ def evaluate(model, dataloader):
 
 
 # %%
-train_sampler, trainloader, validloader, testloader = get_dataloaders("imagenet", 64, "/mnt/wato-drive2/wato-datasets/imagenet")
+train_sampler, trainloader, validloader, testloader = get_dataloaders("imagenet", 64, "/mnt/wato-drive2/wato-datasets/imagenet-temp")
 
 # Training loop
 # model = WideResNet(28, 10, 0.3, 10)
@@ -296,11 +297,11 @@ model = ViT(
     dropout = 0.1
 )
 
-# if torch.cuda.device_count() > 1:
-#     print("Let's use", torch.cuda.device_count(), "GPUs!")
-#     # dim = 0 [30, xxx] -> [10, ...], [10, ...], [10, ...] on 3 GPUs
-#     model = nn.DataParallel(model)
-
+if torch.cuda.device_count() > 1:
+    print("Let's use", torch.cuda.device_count(), "GPUs!")
+    # dim = 0 [30, xxx] -> [10, ...], [10, ...], [10, ...] on 3 GPUs
+    model = nn.DataParallel(model)
+torch.cuda.empty_cache()
 model.to(device)
 losses = []
 # Random parameters chosen - similar to LaNet parameters but with nesterov
@@ -318,13 +319,6 @@ scheduler = StepLR(optimizer, step_size=80, gamma=gamma)
 #         nesterov=True
 #     )
 #scheduler = optim.lr_scheduler.CosineAnnealingLR(optimizer, float(epochs))
-
-# for data in trainloader:
-#     input = data.to(device)
-#     output = model(input)
-#     print("Outside: input size", input.size(),
-#           "output_size", output.size())
-
 
 for e in range(epochs):
     print(f"\nepoch {e+1}/{epochs}")

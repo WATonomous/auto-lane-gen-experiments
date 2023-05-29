@@ -92,7 +92,7 @@ def Solarize(img, v):  # [0, 256]
 
 
 def SolarizeAdd(img, addition=0, threshold=128):
-    img_np = np.array(img).astype(np.int)
+    img_np = np.array(img).astype(int)
     img_np = img_np + addition
     img_np = np.clip(img_np, 0, 255)
     img_np = img_np.astype(np.uint8)
@@ -560,7 +560,7 @@ def get_dataloaders(dataset, batch, dataroot, split=0.15, split_idx=0):
         ])
     else:
         raise ValueError('dataset=%s' % dataset)
-    
+
     # From imagenet paper
     transform_train.transforms.insert(0, RandAugment(2, 9))
 
