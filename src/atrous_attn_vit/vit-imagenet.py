@@ -282,7 +282,7 @@ def evaluate(model, dataloader):
 
 
 # %%
-train_sampler, trainloader, validloader, testloader = get_dataloaders("imagenet", 64, "/mnt/wato-drive2/wato-datasets/imagenet-temp")
+train_sampler, trainloader, validloader, testloader = get_dataloaders("imagenet", 64, "/mnt/scratch/imagenet-temp")
 
 # Training loop
 # model = WideResNet(28, 10, 0.3, 10)
